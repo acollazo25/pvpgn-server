@@ -482,7 +482,10 @@ namespace pvpgn
 					hexdump(hexstrm, packet_get_raw_data(upacket, 0), packet_get_size(upacket));
 				}
 
-				handle_udp_packet(usocket, ntohl(fromaddr.sin_addr.s_addr), ntohs(fromaddr.sin_port), upacket);
+				unsigned short r_port = ntohs(fromaddr.sin_port);
+				unsigned short src_port = r_port < 30000 ? r_port + 30000: r_port;
+
+				handle_udp_packet(usocket, ntohl(fromaddr.sin_addr.s_addr), src_port, upacket);
 				packet_del_ref(upacket);
 			}
 
@@ -1551,7 +1554,7 @@ namespace pvpgn
 				}
 
 				/* only check timers once a second */
-				if (now > prev_time) 
+				if (now > prev_time)
 				{
 					prev_time = now;
 					timerlist_check_timers(now);
